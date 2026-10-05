@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Repair Roots — HVAC Finder</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f4f1e8;color:#18351f}
+header{background:#18351f;color:white;text-align:center;padding:30px 18px}
+h1{margin:0;font-size:34px}
+header div{margin-top:6px}
+main{max-width:680px;margin:auto;padding:16px}
+.card{background:white;border-radius:18px;padding:20px;margin:14px 0;box-shadow:0 3px 15px #0001}
+button,input,select,textarea{width:100%;padding:14px;border-radius:10px;font-size:16px}
+button{border:0;background:#18351f;color:white;font-weight:700;margin-top:12px}
+input,select,textarea{border:1px solid #ccc;background:white}
+label{display:block;font-weight:700;margin:14px 0 6px}
+.hidden{display:none}
+.result{border-left:5px solid #6c9b62;padding-left:14px}
+.warn{background:#fff4d6}
+.small{font-size:13px;color:#667}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>🌳 Repair Roots</h1>
+<div>Rooted in the Right Repair.</div>
+</header>
+
+<main>
+
+<div class="card">
+<h2>Know what’s wrong before you call.</h2>
+<p>Repair Roots helps homeowners understand HVAC symptoms before calling a professional.</p>
+<button onclick="showHome()">🏠 Homeowner HVAC Finder</button>
+<button onclick="showTech()">🔧 Technician Field Tester</button>
+</div>
+
+<section id="home">
+
+<div class="card">
+<h2>HVAC Finder</h2>
+
+<form id="homeForm">
+
+<label>What is happening?</label>
+<select id="symptom">
+<option>AC is blowing warm air</option>
+<option>Weak airflow</option>
+<option>Outdoor unit is not running</option>
+<option>System is freezing/icing</option>
+<option>System is leaking water</option>
+<option>Unusual noise</option>
+<option>System won't heat</option>
+</select>
+
+<label>Indoor airflow</label>
+<select id="airflow">
+<option>Normal</option>
+<option>Weak</option>
+<option>Not sure</option>
+</select>
+
+<label>Outdoor unit</label>
+<select id="outdoor">
+<option>Running</option>
+<option>Not running</option>
+<option>Humming/clicking</option>
+<option>Not sure</option>
+</select>
+
+<label>Indoor temperature °F</label>
+<input id="indoor" type="number">
+
+<label>Outdoor temperature °F</label>
+<input id="outside" type="number">
+
+<button>Analyze My System</button>
+
+</form>
+</div>
+
+<div id="homeResult" class="card hidden"></div>
+
+</section>
+
+<section id="tech" class="hidden">
+
+<div class="card">
+
+<h2>Technician Diagnostic</h2>
+
+<form id="techForm">
+
+<label>Symptom</label>
+<textarea id="techSymptom"></textarea>
+
+<label>Refrigerant</label>
+<select id="refrigerant">
+<option>R-410A</option>
+<option>R-454B</option>
+<option>R-32</option>
+<option>R-407C</option>
+<option>Other / Unknown</option>
+</select>
+
+<label>Metering device</label>
+<select id="metering">
+<option>TXV</option>
+<option>Piston / Fixed Orifice</option>
+<option>EEV</option>
+<option>Unknown</option>
+</select>
+
+<label>Outdoor temperature °F</label>
+<input id="techOutdoor" type="number">
+
+<label>Return-air temperature °F</label>
+<input id="returnAir" type="number">
+
+<label>Supply-air temperature °F</label>
+<input id="supplyAir" type="number">
+
+<label>Suction pressure PSIG</label>
+<input id="suction" type="number">
+
+<label>Head pressure PSIG</label>
+<input id="head" type="number">
+
+<label>Suction-line temperature °F</label>
+<input id="suctionTemp" type="number">
+
+<label>Liquid-line temperature °F</label>
+<input id="liquidTemp" type="number">
+
+<label>Compressor amps</label>
+<input id="amps" type="number">
+
+<label>Compressor RLA</label>
+<input id="rla" type="number">
+
+<label>Voltage</label>
+<input id="voltage" type="number">
+
+<label>Equipment notes</label>
+<textarea id="notes"></textarea>
+
+<button>Analyze Technician Data</button>
+
+</form>
+</div>
+
+<div id="techResult" class="card hidden"></div>
+
+</section>
+
+<div class="card warn">
+<b>Safety:</b>
+<p>
+This is a troubleshooting aid, not a definitive diagnosis.
+Homeowners should not open electrical panels, handle refrigerant,
+bypass safeties, or perform hazardous work.
+</p>
+</div>
+
+</main>
+
+<script>
+
+function showHome(){
+document.getElementById("home").classList.remove("hidden");
+document.getElementById("tech").classList.add("hidden");
+}
+
+function showTech(){
+document.getElementById("home").classList.add("hidden");
+document.getElementById("tech").classList.remove("hidden");
+}
+
+function list(items){
+return items.map(x=>"<li>"+x+"</li>").join("");
+}
+
+document.getElementById("homeForm").onsubmit=function(e){
+
+e.preventDefault();
+
+let symptom=document.getElementById("symptom").value;
+let airflow=document.getElementById("airflow").value;
+let outdoor=document.getElementById("outdoor").value;
+
+let categories=[];
+let checks=[];
+
+if(symptom==="AC is blowing warm air"){
+
+if(airflow==="Weak")
+categories.push("Airflow restriction / blower-side problem");
+
+if(outdoor!=="Running")
+categories.push("Outdoor-unit electrical, control, fan, or compressor category");
+
+if(categories.length===0)
+categories.push("Cooling-performance problem requiring technician testing");
+
+checks.push("Check the air filter.");
+checks.push("Make sure supply registers are open.");
+checks.push("Check that the outdoor unit has clear airflow.");
+
+}
+
+else if(symptom==="Weak airflow"){
+
+categories.push("Airflow restriction / blower-side category");
+
+checks.push("Check the filter.");
+checks.push("Check that return and supply openings are unobstructed.");
+
+}
+
+else if(symptom==="System is freezing/icing"){
+
+categories.push("Airflow, refrigerant circuit, metering, or operating-condition category");
+
+checks.push("Turn cooling off and allow the ice to thaw.");
+checks.push("Do not chip or remove ice with tools.");
+checks.push("Check the air filter.");
+
+}
+
+else if(symptom==="System is leaking water"){
+
+categories.push("Condensate/drainage, icing, or installation category");
+
+checks.push("If water is near electrical equipment, shut the system down.");
+checks.push("Have a qualified technician inspect the system.");
+
+}
+
+else{
+
+categories.push("Professional inspection recommended");
+
+}
+
+let indoor=document.getElementById("indoor").value;
+let outside=document.getElementById("outside").value;
+
+document.getElementById("homeResult").innerHTML=
+
+"<h2>Preliminary Result</h2>"+
+"<div class='result'>"+
+"<b>Likely categories</b>"+
+"<ul>"+list(categories)+"</ul>"+
+"<b>Safe checks</b>"+
+"<ul>"+list(checks)+"</ul>"+
+(indoor&&outside?
+"<p>Indoor: "+indoor+"°F | Outdoor: "+outside+"°F</p>":
+"")+
+"<p><b>This is not a definitive diagnosis.</b></p>"+
+"</div>";
+
+document.getElementById("homeResult").classList.remove("hidden");
+
+};
+
+document.getElementById("techForm").onsubmit=function(e){
+
+e.preventDefault();
+
+let returnAir=parseFloat(document.getElementById("returnAir").value);
+let supplyAir=parseFloat(document.getElementById("supplyAir").value);
+let amps=parseFloat(document.getElementById("amps").value);
+let rla=parseFloat(document.getElementById("rla").value);
+
+let results=[];
+
+if(!isNaN(returnAir)&&!isNaN(supplyAir)){
+
+let dt=returnAir-supplyAir;
+
+results.push(
+"Return-to-supply ΔT: "+dt.toFixed(1)+
+"°F. Interpret this against design conditions, airflow, load, and manufacturer data."
+);
+
+}
+
+if(!isNaN(amps)&&!isNaN(rla)&&rla>0){
+
+let percent=(amps/rla)*100;
+
+results.push(
+"Compressor current: "+percent.toFixed(0)+
+"% of entered RLA. Do not use this reading alone to condemn a compressor."
+);
+
+}
+
+results.push(
+"Pressure, saturation, superheat, and subcooling conclusions require accurate refrigerant data and complete operating conditions."
+);
+
+document.getElementById("techResult").innerHTML=
+
+"<h2>Technician Analysis</h2>"+
+"<div class='result'><ul>"+
+list(results)+
+"</ul>"+
+"<p><b>Repair Roots rule:</b> Never turn one pressure, temperature, amp reading, icing symptom, or ΔT into a definitive diagnosis.</p>"+
+"</div>";
+
+document.getElementById("techResult").classList.remove("hidden");
+
+};
+
+</script>
+
+</body>
+</html>
