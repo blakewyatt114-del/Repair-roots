@@ -1,25 +1,34 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Repair Roots — HVAC Finder</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repair Roots | HVAC Diagnostic Finder</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f4f1e8;color:#18351f}
-header{background:#18351f;color:white;text-align:center;padding:30px 18px}
-h1{margin:0;font-size:34px}
-header div{margin-top:6px}
-main{max-width:680px;margin:auto;padding:16px}
-.card{background:white;border-radius:18px;padding:20px;margin:14px 0;box-shadow:0 3px 15px #0001}
-button,input,select,textarea{width:100%;padding:14px;border-radius:10px;font-size:16px}
-button{border:0;background:#18351f;color:white;font-weight:700;margin-top:12px}
-input,select,textarea{border:1px solid #ccc;background:white}
-label{display:block;font-weight:700;margin:14px 0 6px}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f4f7f4;color:#18251c}
+header{background:#173b24;color:white;padding:24px 18px;text-align:center}
+header h1{margin:0;font-size:34px}
+header p{margin:8px 0 0;color:#dcebdd}
+main{max-width:900px;margin:auto;padding:20px}
+.card{background:white;border-radius:14px;padding:20px;margin-bottom:18px;box-shadow:0 3px 12px rgba(0,0,0,.08)}
+h2{margin-top:0;color:#173b24}
+h3{color:#245b34}
+label{display:block;font-weight:bold;margin-top:14px;margin-bottom:6px}
+input,select,textarea{width:100%;padding:12px;border:1px solid #c8d1ca;border-radius:8px;font-size:16px}
+textarea{min-height:90px}
+button{width:100%;padding:14px;margin-top:18px;border:0;border-radius:9px;background:#24733b;color:white;font-size:17px;font-weight:bold;cursor:pointer}
+button:hover{background:#1b5c2e}
+.secondary{background:#53665a}
 .hidden{display:none}
-.result{border-left:5px solid #6c9b62;padding-left:14px}
-.warn{background:#fff4d6}
-.small{font-size:13px;color:#667}
+.result{border-left:5px solid #24733b;background:#eef6ef;padding:14px;margin:10px 0;border-radius:6px}
+.warning{border-left-color:#c88719;background:#fff7e7}
+.danger{border-left-color:#b83232;background:#fff0f0}
+.tag{display:inline-block;padding:5px 9px;border-radius:15px;background:#dcebdd;margin:3px;font-size:13px}
+.small{font-size:13px;color:#5e6b62}
+.mode-buttons{display:flex;gap:10px}
+.mode-buttons button{margin-top:0}
+ul{padding-left:22px}
 </style>
 </head>
 
@@ -27,113 +36,133 @@ label{display:block;font-weight:700;margin:14px 0 6px}
 
 <header>
 <h1>🌳 Repair Roots</h1>
-<div>Rooted in the Right Repair.</div>
+<p>Rooted in the Right Repair.</p>
 </header>
 
 <main>
 
 <div class="card">
-<h2>Know what’s wrong before you call.</h2>
-<p>Repair Roots helps homeowners understand HVAC symptoms before calling a professional.</p>
-<button onclick="showHome()">🏠 Homeowner HVAC Finder</button>
-<button onclick="showTech()">🔧 Technician Field Tester</button>
+<h2>HVAC Diagnostic Finder</h2>
+<p>Use the homeowner finder for basic troubleshooting or technician mode for a deeper diagnostic review.</p>
+
+<div class="mode-buttons">
+<button onclick="showMode('homeowner')">Homeowner</button>
+<button class="secondary" onclick="showMode('tech')">Technician</button>
+</div>
 </div>
 
-<section id="home">
-
-<div class="card">
-<h2>HVAC Finder</h2>
-
-<form id="homeForm">
+<!-- HOMEOWNER MODE -->
+<div id="homeowner" class="card">
+<h2>Homeowner HVAC Finder</h2>
 
 <label>What is happening?</label>
-<select id="symptom">
-<option>AC is blowing warm air</option>
-<option>Weak airflow</option>
-<option>Outdoor unit is not running</option>
-<option>System is freezing/icing</option>
-<option>System is leaking water</option>
-<option>Unusual noise</option>
-<option>System won't heat</option>
+<select id="hSymptom">
+<option value="warm">AC is running but blowing warm air</option>
+<option value="airflow">Weak airflow</option>
+<option value="ice">System is freezing/icing</option>
+<option value="outside">Outdoor unit isn't running</option>
+<option value="water">Water leaking</option>
+<option value="unknown">Something else</option>
 </select>
 
-<label>Indoor airflow</label>
-<select id="airflow">
+<label>How does the airflow feel?</label>
+<select id="hAirflow">
 <option>Normal</option>
 <option>Weak</option>
+<option>Very weak</option>
 <option>Not sure</option>
 </select>
 
-<label>Outdoor unit</label>
-<select id="outdoor">
-<option>Running</option>
-<option>Not running</option>
-<option>Humming/clicking</option>
+<label>Is the outdoor unit running?</label>
+<select id="hOutdoor">
+<option>Yes</option>
+<option>No</option>
+<option>Humming but not starting</option>
 <option>Not sure</option>
 </select>
 
-<label>Indoor temperature °F</label>
-<input id="indoor" type="number">
+<label>Indoor temperature</label>
+<input id="hIndoor" type="number" placeholder="Example: 78">
 
-<label>Outdoor temperature °F</label>
-<input id="outside" type="number">
+<label>Outdoor temperature</label>
+<input id="hOutdoorTemp" type="number" placeholder="Example: 92">
 
-<button>Analyze My System</button>
+<label>ZIP Code</label>
+<input id="hZip" type="text" placeholder="Example: 36830">
 
-</form>
+<label>Urgency</label>
+<select id="hUrgency">
+<option>Normal</option>
+<option>Urgent</option>
+<option>Emergency</option>
+</select>
+
+<button onclick="runHomeowner()">Find the Likely Path</button>
+
+<div id="homeResult"></div>
 </div>
 
-<div id="homeResult" class="card hidden"></div>
+<!-- TECHNICIAN MODE -->
+<div id="tech" class="card hidden">
 
-</section>
+<h2>Technician Diagnostic Engine</h2>
 
-<section id="tech" class="hidden">
-
-<div class="card">
-
-<h2>Technician Diagnostic</h2>
-
-<form id="techForm">
-
-<label>Symptom</label>
-<textarea id="techSymptom"></textarea>
+<label>Primary symptom</label>
+<select id="tSymptom">
+<option value="warm">AC blowing warm air</option>
+<option value="capacity">Low cooling capacity</option>
+<option value="airflow">Weak airflow</option>
+<option value="icing">System icing</option>
+<option value="highhead">High head pressure</option>
+<option value="lowsuction">Low suction pressure</option>
+<option value="highsuction">High suction pressure</option>
+<option value="hotcompressor">Compressor running hot</option>
+<option value="nostart">Compressor not starting</option>
+<option value="unknown">Unknown / general diagnosis</option>
+</select>
 
 <label>Refrigerant</label>
 <select id="refrigerant">
+<option value="">Select</option>
 <option>R-410A</option>
 <option>R-454B</option>
 <option>R-32</option>
 <option>R-407C</option>
+<option>R-134a</option>
+<option>R-404A</option>
+<option>R-507</option>
 <option>Other / Unknown</option>
 </select>
 
 <label>Metering device</label>
 <select id="metering">
+<option value="">Select</option>
 <option>TXV</option>
 <option>Piston / Fixed Orifice</option>
 <option>EEV</option>
+<option>Capillary</option>
 <option>Unknown</option>
 </select>
 
 <label>Outdoor temperature °F</label>
-<input id="techOutdoor" type="number">
+<input id="outdoorTemp" type="number">
 
-<label>Return-air temperature °F</label>
-<input id="returnAir" type="number">
+<label>Return air temperature °F</label>
+<input id="returnTemp" type="number">
 
-<label>Supply-air temperature °F</label>
-<input id="supplyAir" type="number">
+<label>Supply air temperature °F</label>
+<input id="supplyTemp" type="number">
 
 <label>Suction pressure PSIG</label>
 <input id="suction" type="number">
 
-<label>Head pressure PSIG</label>
+<label>Head / discharge pressure PSIG</label>
 <input id="head" type="number">
 
-<label>Suction-line temperature °F</label>
+<label>Suction line temperature °F</label>
 <input id="suctionTemp" type="number">
 
-<label>Liquid-line temperature °F</label>
+<label>Liquid line temperature °F</label>
 <input id="liquidTemp" type="number">
 
 <label>Compressor amps</label>
@@ -145,24 +174,21 @@ label{display:block;font-weight:700;margin:14px 0 6px}
 <label>Voltage</label>
 <input id="voltage" type="number">
 
-<label>Equipment notes</label>
-<textarea id="notes"></textarea>
+<label>Model / equipment notes</label>
+<textarea id="notes" placeholder="Model number, tonnage, manufacturer data, indoor/outdoor conditions, recent repairs, etc."></textarea>
 
-<button>Analyze Technician Data</button>
+<button onclick="runTechnician()">Analyze Technician Data</button>
 
-</form>
+<div id="techResult"></div>
+
 </div>
 
-<div id="techResult" class="card hidden"></div>
-
-</section>
-
-<div class="card warn">
-<b>Safety:</b>
-<p>
-This is a troubleshooting aid, not a definitive diagnosis.
-Homeowners should not open electrical panels, handle refrigerant,
-bypass safeties, or perform hazardous work.
+<div class="card">
+<h3>Repair Roots Safety Rule</h3>
+<p class="small">
+Never condemn a compressor, blower, TXV, metering device, or refrigerant charge from one pressure,
+temperature, amperage, icing symptom, or temperature split alone.
+Always compare readings with manufacturer data and actual operating conditions.
 </p>
 </div>
 
@@ -170,152 +196,259 @@ bypass safeties, or perform hazardous work.
 
 <script>
 
-function showHome(){
-document.getElementById("home").classList.remove("hidden");
-document.getElementById("tech").classList.add("hidden");
+function showMode(mode){
+document.getElementById("homeowner").classList.toggle("hidden",mode!=="homeowner");
+document.getElementById("tech").classList.toggle("hidden",mode!=="tech");
+window.scrollTo({top:0,behavior:"smooth"});
 }
 
-function showTech(){
-document.getElementById("home").classList.add("hidden");
-document.getElementById("tech").classList.remove("hidden");
-}
+function runHomeowner(){
 
-function list(items){
-return items.map(x=>"<li>"+x+"</li>").join("");
-}
-
-document.getElementById("homeForm").onsubmit=function(e){
-
-e.preventDefault();
-
-let symptom=document.getElementById("symptom").value;
-let airflow=document.getElementById("airflow").value;
-let outdoor=document.getElementById("outdoor").value;
-
-let categories=[];
-let checks=[];
-
-if(symptom==="AC is blowing warm air"){
-
-if(airflow==="Weak")
-categories.push("Airflow restriction / blower-side problem");
-
-if(outdoor!=="Running")
-categories.push("Outdoor-unit electrical, control, fan, or compressor category");
-
-if(categories.length===0)
-categories.push("Cooling-performance problem requiring technician testing");
-
-checks.push("Check the air filter.");
-checks.push("Make sure supply registers are open.");
-checks.push("Check that the outdoor unit has clear airflow.");
-
-}
-
-else if(symptom==="Weak airflow"){
-
-categories.push("Airflow restriction / blower-side category");
-
-checks.push("Check the filter.");
-checks.push("Check that return and supply openings are unobstructed.");
-
-}
-
-else if(symptom==="System is freezing/icing"){
-
-categories.push("Airflow, refrigerant circuit, metering, or operating-condition category");
-
-checks.push("Turn cooling off and allow the ice to thaw.");
-checks.push("Do not chip or remove ice with tools.");
-checks.push("Check the air filter.");
-
-}
-
-else if(symptom==="System is leaking water"){
-
-categories.push("Condensate/drainage, icing, or installation category");
-
-checks.push("If water is near electrical equipment, shut the system down.");
-checks.push("Have a qualified technician inspect the system.");
-
-}
-
-else{
-
-categories.push("Professional inspection recommended");
-
-}
-
-let indoor=document.getElementById("indoor").value;
-let outside=document.getElementById("outside").value;
-
-document.getElementById("homeResult").innerHTML=
-
-"<h2>Preliminary Result</h2>"+
-"<div class='result'>"+
-"<b>Likely categories</b>"+
-"<ul>"+list(categories)+"</ul>"+
-"<b>Safe checks</b>"+
-"<ul>"+list(checks)+"</ul>"+
-(indoor&&outside?
-"<p>Indoor: "+indoor+"°F | Outdoor: "+outside+"°F</p>":
-"")+
-"<p><b>This is not a definitive diagnosis.</b></p>"+
-"</div>";
-
-document.getElementById("homeResult").classList.remove("hidden");
-
-};
-
-document.getElementById("techForm").onsubmit=function(e){
-
-e.preventDefault();
-
-let returnAir=parseFloat(document.getElementById("returnAir").value);
-let supplyAir=parseFloat(document.getElementById("supplyAir").value);
-let amps=parseFloat(document.getElementById("amps").value);
-let rla=parseFloat(document.getElementById("rla").value);
+let symptom=document.getElementById("hSymptom").value;
+let airflow=document.getElementById("hAirflow").value;
+let outdoor=document.getElementById("hOutdoor").value;
+let indoor=document.getElementById("hIndoor").value;
+let outdoorTemp=document.getElementById("hOutdoorTemp").value;
 
 let results=[];
 
-if(!isNaN(returnAir)&&!isNaN(supplyAir)){
-
-let dt=returnAir-supplyAir;
-
-results.push(
-"Return-to-supply ΔT: "+dt.toFixed(1)+
-"°F. Interpret this against design conditions, airflow, load, and manufacturer data."
-);
-
+if(symptom==="warm"){
+if(airflow==="Weak"||airflow==="Very weak"){
+results.push("Restricted airflow is a strong possibility. Check the filter, registers, return airflow, and obvious airflow restrictions.");
+}
+if(outdoor==="No"){
+results.push("The outdoor unit not operating can explain warm air. Verify thermostat call and whether the system has power before calling for service.");
+}
+if(outdoor==="Humming but not starting"){
+results.push("The outdoor unit may have a starting/control issue. This requires professional electrical diagnosis.");
+}
+if(airflow==="Normal"&&outdoor==="Yes"){
+results.push("The system is operating but not producing normal cooling. Refrigerant circuit, airflow, coil condition, metering, compressor performance, or system load may need professional testing.");
+}
 }
 
-if(!isNaN(amps)&&!isNaN(rla)&&rla>0){
-
-let percent=(amps/rla)*100;
-
-results.push(
-"Compressor current: "+percent.toFixed(0)+
-"% of entered RLA. Do not use this reading alone to condemn a compressor."
-);
-
+if(symptom==="airflow"){
+results.push("Start with airflow: filter, return path, blower operation, evaporator coil condition, registers, and duct restrictions.");
 }
 
-results.push(
-"Pressure, saturation, superheat, and subcooling conclusions require accurate refrigerant data and complete operating conditions."
-);
+if(symptom==="ice"){
+results.push("Turn cooling off and allow the ice to completely thaw.");
+results.push("Do not continue operating a heavily iced system.");
+results.push("After thawing, airflow and operating conditions should be checked before assuming a refrigerant problem.");
+}
 
-document.getElementById("techResult").innerHTML=
+if(symptom==="outside"){
+results.push("Check whether the thermostat is calling for cooling and whether the indoor blower is operating.");
+results.push("Do not open electrical panels or bypass safety controls.");
+}
 
-"<h2>Technician Analysis</h2>"+
-"<div class='result'><ul>"+
-list(results)+
-"</ul>"+
-"<p><b>Repair Roots rule:</b> Never turn one pressure, temperature, amp reading, icing symptom, or ΔT into a definitive diagnosis.</p>"+
-"</div>";
+if(symptom==="water"){
+results.push("A clogged condensate drain, frozen coil, drain-pan problem, or installation issue can cause water leakage.");
+results.push("If the system is frozen, shut cooling off and allow it to thaw.");
+}
 
-document.getElementById("techResult").classList.remove("hidden");
+if(!results.length){
+results.push("More information is needed to narrow the problem.");
+}
 
-};
+let html="<h3>Preliminary Repair Path</h3>";
+
+results.forEach(r=>{
+html+=`<div class="result">${r}</div>`;
+});
+
+if(indoor&&outdoorTemp){
+let difference=Number(outdoorTemp)-Number(indoor);
+html+=`<div class="result"><strong>Indoor vs. outdoor temperature difference:</strong> ${difference}°F</div>`;
+}
+
+html+=`<p class="small">This is a preliminary troubleshooting guide, not a definitive diagnosis.</p>`;
+
+document.getElementById("homeResult").innerHTML=html;
+}
+
+function runTechnician(){
+
+let symptom=document.getElementById("tSymptom").value;
+let refrigerant=document.getElementById("refrigerant").value;
+let metering=document.getElementById("metering").value;
+
+let outdoor=Number(document.getElementById("outdoorTemp").value);
+let ret=Number(document.getElementById("returnTemp").value);
+let supply=Number(document.getElementById("supplyTemp").value);
+
+let suction=Number(document.getElementById("suction").value);
+let head=Number(document.getElementById("head").value);
+
+let suctionTemp=Number(document.getElementById("suctionTemp").value);
+let liquidTemp=Number(document.getElementById("liquidTemp").value);
+
+let amps=Number(document.getElementById("amps").value);
+let rla=Number(document.getElementById("rla").value);
+let voltage=Number(document.getElementById("voltage").value);
+
+let recommendations=[];
+let observations=[];
+let priority="No high-priority pattern identified";
+
+let deltaT=null;
+
+if(Number.isFinite(ret)&&Number.isFinite(supply)&&ret>0&&supply>0){
+deltaT=ret-supply;
+observations.push(`Measured air temperature split: ${deltaT.toFixed(1)}°F.`);
+
+if(deltaT<10){
+priority="Moderate";
+recommendations.push("Low temperature split: verify airflow, indoor load, measurement accuracy, evaporator condition, and refrigerant circuit before adjusting charge.");
+recommendations.push("Check blower operation, filter, return restriction, evaporator coil condition, and duct/static-pressure issues.");
+}
+
+else if(deltaT>25){
+priority="Moderate";
+recommendations.push("High temperature split: verify airflow and measurement locations before drawing refrigerant conclusions.");
+recommendations.push("Inspect filter, blower speed, evaporator coil, return air path, registers, and duct restrictions.");
+}
+
+else{
+observations.push("Temperature split is not showing an obvious high/low pattern by itself. Compare with manufacturer data and actual system conditions.");
+}
+}
+
+if(Number.isFinite(voltage)&&voltage>0&&voltage<197){
+priority="High";
+recommendations.push("Low measured voltage: verify voltage at the equipment under load and compare against the equipment nameplate/manufacturer limits.");
+}
+
+if(Number.isFinite(amps)&&Number.isFinite(rla)&&rla>0){
+
+let ampPercent=(amps/rla)*100;
+
+observations.push(`Compressor current is approximately ${ampPercent.toFixed(0)}% of RLA.`);
+
+if(ampPercent>110){
+priority="High";
+recommendations.push("Elevated compressor current: verify voltage, condenser airflow, head pressure, system load, wiring, and compressor operating conditions before condemning the compressor.");
+}
+
+else if(ampPercent<55){
+priority="Moderate";
+recommendations.push("Low compressor current: verify that the compressor is properly loaded and compare operating conditions with manufacturer expectations.");
+}
+}
+
+let highPressureRefrigerants=["R-410A","R-454B","R-32"];
+
+if(Number.isFinite(head)&&head>0){
+
+if((refrigerant==="R-410A"||refrigerant==="R-454B")&&head>400){
+priority="High";
+recommendations.push("High-side pressure is elevated for this operating pattern. Check condenser airflow, coil cleanliness, outdoor ambient, fan operation, non-condensables/charge history, and metering conditions.");
+}
+
+if(symptom==="highhead"){
+priority="High";
+recommendations.push("High head-pressure complaint: verify condenser airflow and outdoor ambient first, then evaluate refrigerant circuit and metering conditions.");
+}
+
+if(symptom==="lowsuction"){
+priority="Moderate";
+recommendations.push("Low-suction complaint: verify airflow/load and evaporator conditions before adding refrigerant.");
+}
+
+if(symptom==="highsuction"){
+priority="Moderate";
+recommendations.push("High-suction complaint: evaluate indoor load, airflow, compressor capacity, metering-device behavior, and refrigerant operating conditions.");
+}
+}
+
+if(symptom==="icing"){
+priority="Moderate";
+recommendations.push("For an iced system, thaw the coil completely before using pressure readings to diagnose the refrigerant circuit.");
+recommendations.push("Verify airflow first: filter, blower, evaporator coil, return path, and duct/static-pressure conditions.");
+}
+
+if(symptom==="nostart"){
+priority="High";
+recommendations.push("Compressor not starting: verify thermostat/control call, disconnect/power, voltage under load, contactor/control circuit, and manufacturer-required start components before condemning the compressor.");
+}
+
+if(symptom==="warm"||symptom==="capacity"){
+recommendations.push("For cooling complaints, establish airflow and indoor/outdoor operating conditions before using pressure readings to judge refrigerant charge.");
+}
+
+if(refrigerant && suction>0 && suctionTemp>0){
+recommendations.push("Actual superheat should be calculated using the correct pressure-temperature relationship for the selected refrigerant and compared with the manufacturer's procedure.");
+}
+
+if(refrigerant && head>0 && liquidTemp>0){
+recommendations.push("Actual subcooling should be calculated using the correct pressure-temperature relationship for the selected refrigerant and compared with manufacturer data.");
+}
+
+if(metering==="TXV"){
+recommendations.push("With a TXV, evaluate superheat stability, evaporator load, liquid-line condition, and airflow before changing charge or adjusting the valve.");
+}
+
+if(metering==="Piston / Fixed Orifice"){
+recommendations.push("With a fixed orifice, evaluate superheat along with indoor/outdoor conditions. Do not charge from suction pressure alone.");
+}
+
+if(metering==="EEV"){
+recommendations.push("With an EEV, verify sensor readings, valve command/position, operating conditions, and controller behavior before changing charge.");
+}
+
+if(symptom==="highhead"){
+recommendations.push("Check condenser coil cleanliness, condenser fan operation, airflow, outdoor ambient, and whether the system has a history of incorrect charge or component replacement.");
+}
+
+if(symptom==="hotcompressor"){
+recommendations.push("Compressor overheating can result from high compression ratio, poor cooling, electrical issues, low mass flow, airflow problems, or other system conditions. Verify the complete operating pattern before condemning the compressor.");
+}
+
+if(!recommendations.length){
+recommendations.push("Collect complete operating conditions and compare them with manufacturer data before making a component or charge decision.");
+}
+
+let html="";
+
+html+=`<h3>Technician Recommendations</h3>`;
+
+html+=`<div class="result ${priority==="High"?"danger":priority==="Moderate"?"warning":""}">
+<strong>Priority:</strong> ${priority}
+</div>`;
+
+if(refrigerant){
+html+=`<span class="tag">Refrigerant: ${refrigerant}</span>`;
+}
+
+if(metering){
+html+=`<span class="tag">Metering: ${metering}</span>`;
+}
+
+if(observations.length){
+html+=`<h3>What the data suggests</h3>`;
+observations.forEach(item=>{
+html+=`<div class="result">${item}</div>`;
+});
+}
+
+html+=`<h3>Recommended next tests / actions</h3><ul>`;
+
+recommendations.forEach(item=>{
+html+=`<li>${item}</li>`;
+});
+
+html+=`</ul>`;
+
+html+=`
+<div class="result warning">
+<strong>Repair Roots diagnostic rule:</strong><br>
+Never condemn a compressor, blower, TXV, metering device, or refrigerant charge from one pressure,
+temperature, amperage, icing symptom, or ΔT reading. Look for the complete pattern and compare it with manufacturer data.
+</div>
+`;
+
+document.getElementById("techResult").innerHTML=html;
+}
 
 </script>
 
